@@ -1,0 +1,11 @@
+
+- name: 必要パッケージインストール
+  yum: name={{ item }}
+  with_items:
+    - net-tools
+    - bash-completion.noarch
+    - sudo
+    - htop
+    - psmisc
+    - vim
+    - logrotate

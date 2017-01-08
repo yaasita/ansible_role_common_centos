@@ -1,0 +1,9 @@
+---
+
+# common
+common:
+  #host_name: hoge-server
+  etckeeper_install: true
+  ntp_setting: true
+#common_locale_setting: true
+#common_timezone_setting: true

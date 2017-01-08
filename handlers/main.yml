@@ -1,0 +1,4 @@
+---
+
+- name: setenforce
+  shell: setenforce 0

@@ -1,0 +1,21 @@
+---
+
+- name: etckeeperインストール
+  yum: name={{ item }}
+  with_items:
+    - git
+    - etckeeper
+
+- name: gitconfig存在確認
+  shell: test -e /root/.gitconfig
+  register: result
+  changed_when: result.rc != 0
+  failed_when: result.rc not in [0, 1]
+
+- name: git config設定
+  template: src=gitconfig.j2 dest=/root/.gitconfig
+  when: result.rc != 0
+
+- name: etckeeper 1st commit
+  shell: etckeeper init && etckeeper commit -m 1st creates=/etc/.git chdir=/etc
+

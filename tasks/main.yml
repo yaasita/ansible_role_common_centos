@@ -1,0 +1,45 @@
+---
+
+- name: hostname設定
+  hostname: name={{ common.host_name }}
+  when: common.host_name is defined
+
+#- name: epelとremi入れる
+#  yum: name={{item}}
+#  with_items:
+#    - http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+#    - http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+#  when: ansible_distribution_major_version == "6"
+
+- name: epel入れる
+  yum: name={{item}}
+  with_items:
+    - http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+  when: ansible_distribution_major_version == "7"
+
+- include: etckeeper.yml
+  when: common.etckeeper_install == true
+
+- name: SELinux存在確認
+  shell: test -e /etc/sysconfig/selinux
+  register: result
+  changed_when: result.rc not in [0, 1]
+  failed_when: result.rc not in [0, 1]
+
+- name: SELinuxの無効化
+  lineinfile: dest=/etc/sysconfig/selinux regexp="^SELINUX=enforcing" line="SELINUX=disabled"
+  when: result.rc == 0
+  notify: setenforce
+
+#- name: firewalldの無効化
+#  service: name=firewalld enabled=no state=stop
+
+- include: ntp.yml
+  when: common.ntp_setting == true
+
+- name: 必要パッケージ
+  include: yum.yml
+
+#- include: timezone.yml
+#  when: common_timezone_setting == true
+#
